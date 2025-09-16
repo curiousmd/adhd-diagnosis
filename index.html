@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ADHD Clinical Decision Support Tool — DSM‑5 (A–F) + CADDRA Screen</title>
+  <title>ADHD Clinical Assessment Tool — Structured Interview & DSM-5</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
-    .container{max-width:1000px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.1);overflow:hidden}
+    .container{max-width:1200px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.1);overflow:hidden}
     .header{background:linear-gradient(135deg,#2c3e50,#34495e);color:#fff;padding:28px;text-align:center}
     .header h1{font-weight:600;letter-spacing:.2px}
     .sub{opacity:.9;margin-top:6px}
@@ -15,13 +15,15 @@
     .btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;padding:12px 22px;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .15s}
     .btn:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(102,126,234,.3)}
     .btn[disabled]{background:#c8c8c8;cursor:not-allowed;box-shadow:none;transform:none}
+    .btn.secondary{background:linear-gradient(135deg,#6c757d,#495057)}
     .form-group{margin-bottom:22px}
     label{display:block;margin-bottom:8px;color:#2c3e50;font-weight:600}
-    input[type=password],input[type=number]{width:100%;padding:12px 14px;border:2px solid #e6e6e6;border-radius:10px;font-size:16px}
-    input:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.12)}
+    input[type=password],input[type=number],input[type=text],textarea{width:100%;padding:12px 14px;border:2px solid #e6e6e6;border-radius:10px;font-size:16px}
+    textarea{min-height:80px;resize:vertical}
+    input:focus,textarea:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.12)}
 
     .progress-bar{height:8px;background:#ececec;border-radius:999px;overflow:hidden;margin-bottom:24px}
-    .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#667eea,#764ba2)}
+    .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#667eea,#764ba2);transition:width 0.3s}
 
     .pill{display:inline-block;font-size:12px;padding:4px 10px;border-radius:999px;font-weight:700;letter-spacing:.2px}
     .pill.ok{background:#e8fff2;color:#118a3b}
@@ -39,7 +41,7 @@
 
     .nav{display:flex;justify-content:space-between;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid #eaeaea}
 
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
     .report{display:none}
 
     .diag{padding:24px;border-radius:12px;color:#fff;margin-bottom:18px;text-align:center}
@@ -51,18 +53,32 @@
     .tracker h3{margin-bottom:8px;color:#2c3e50}
     .tracker .row{display:flex;flex-wrap:wrap;gap:10px}
 
+    .phase-indicator{background:#fff;border-radius:12px;padding:16px;margin-bottom:20px;border-left:4px solid #667eea}
+    .phase-indicator h3{color:#2c3e50;margin-bottom:8px}
+    .phase-indicator .current{color:#667eea;font-weight:600}
+
+    .interview-notes{background:#f8f9fa;border-radius:8px;padding:16px;margin-bottom:16px}
+    .interview-notes h4{color:#2c3e50;margin-bottom:8px}
+
     .small{font-size:12px;color:#6b7280}
     .print-row{text-align:center;margin-top:22px}
+    .two-column{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
-    @media (max-width:768px){.options{flex-direction:column}.nav{flex-direction:column}}
+    .section-header{background:#667eea;color:white;padding:16px;margin:-22px -22px 22px -22px;border-radius:8px 8px 0 0}
+
+    @media (max-width:768px){
+      .options{flex-direction:column}
+      .nav{flex-direction:column}
+      .two-column{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>ADHD Clinical Decision Support Tool</h1>
-      <div class="sub">DSM‑5 Criteria A–F with rule‑out screeners + CADDRA stimulant contraindication screen</div>
-      <div class="small" style="margin-top:10px">For clinical decision support only; not a diagnosis. Use collateral information where possible.</div>
+      <h1>ADHD Clinical Assessment Tool</h1>
+      <div class="sub">Structured Clinical Interview → DSM-5 Criteria A–F → CADDRA Medication Screen</div>
+      <div class="small" style="margin-top:10px">For clinical decision support only; not a substitute for comprehensive evaluation</div>
     </div>
 
     <!-- Login -->
@@ -75,84 +91,215 @@
       <button class="btn" id="accessBtn">Access Tool</button>
     </div>
 
-    <!-- Patient Info -->
-    <div id="pinfo" class="section" style="display:none">
-      <div class="form-group">
-        <label for="age">Patient Age</label>
-        <input id="age" type="number" min="4" max="100" placeholder="Years (4–100)" />
+    <!-- Session Opening -->
+    <div id="sessionOpening" class="section" style="display:none">
+      <div class="phase-indicator">
+        <h3>Phase 1: Session Opening</h3>
+        <div class="small">Scripts for establishing rapport, verifying identity, and setting expectations</div>
       </div>
-      <div id="ageErr" class="card" style="display:none;border-left-color:#c53030;color:#b71c1c;background:#fff5f5">Enter a valid age between 4 and 100.</div>
-      <button class="btn" id="beginBtn">Begin Assessment</button>
+
+      <div class="card">
+        <div class="section-header">
+          <h3>Welcome & Verification Script</h3>
+        </div>
+        <div class="interview-notes">
+          <p><strong>Opening:</strong> "Hello, I'm Dr. [Name], a Psychiatrist with [Practice]. I'll be your provider today - thank you for joining this session."</p>
+          <p><strong>Verification:</strong> "Just before we start, could I confirm your full name and date of birth?"</p>
+          <p><strong>Location:</strong> "To meet local regulations, could you share where you're currently located?"</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-header">
+          <h3>Structure & Confidentiality Script</h3>
+        </div>
+        <div class="interview-notes">
+          <p><strong>Duration:</strong> "This session will take approximately 30 minutes."</p>
+          <p><strong>Confidentiality:</strong> "Just a quick note — this session is being recorded as part of our standard practice for quality assurance and documentation purposes."</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="patientAge">Patient Age (for assessment criteria)</label>
+        <input id="patientAge" type="number" min="4" max="100" placeholder="Years (4–100)" />
+      </div>
+
+      <div id="sessionErr" class="card" style="display:none;border-left-color:#c53030;color:#b71c1c;background:#fff5f5">Please enter patient age to determine appropriate assessment criteria.</div>
+      <button class="btn" id="startClinicalBtn">Begin Clinical Assessment</button>
     </div>
 
-    <!-- Assessment -->
-    <div id="assessment" class="section" style="display:none">
-      <div class="progress-bar"><div id="pfill" class="progress-fill"></div></div>
-
-      <div class="tracker">
-        <h3>Criterion Tracker</h3>
-        <div class="row small">A1 Inattention: <span id="tA1" class="pill pending">0/9</span> A2 Hyper/Imp: <span id="tA2" class="pill pending">0/9</span> B Onset <12: <span id="tB" class="pill pending">—</span> C ≥2 settings: <span id="tC" class="pill pending">—</span> D Impairment: <span id="tD" class="pill pending">—</span> E ≥6 mo: <span id="tE" class="pill pending">—</span> F Rule‑out: <span id="tF" class="pill pending">—</span></div>
+    <!-- Clinical Assessment -->
+    <div id="clinicalAssessment" class="section" style="display:none">
+      <div class="phase-indicator">
+        <h3>Phase 2: Clinical Assessment</h3>
+        <div class="small">Gather presenting concerns, symptom history, and medical background</div>
       </div>
 
-      <div id="qcard" class="card">
-        <div class="q-num" id="qnum"></div>
-        <div class="q-text" id="qtext"></div>
-        <div class="options" id="opts"></div>
+      <div class="progress-bar"><div id="clinicalProgress" class="progress-fill"></div></div>
+
+      <div id="clinicalCard" class="card">
+        <div class="q-num" id="clinicalQNum"></div>
+        <div class="q-text" id="clinicalQText"></div>
+        <div id="clinicalInput"></div>
       </div>
 
       <div class="nav">
-        <button class="btn" id="prev" disabled>Previous</button>
-        <button class="btn" id="next" disabled>Next</button>
+        <button class="btn secondary" id="clinicalPrev" disabled>Previous</button>
+        <button class="btn" id="clinicalNext" disabled>Next</button>
+      </div>
+    </div>
+
+    <!-- DSM-5 Assessment -->
+    <div id="dsmAssessment" class="section" style="display:none">
+      <div class="phase-indicator">
+        <h3>Phase 3: DSM-5 Structured Assessment</h3>
+        <div class="small">Systematic evaluation of ADHD criteria A–F</div>
+      </div>
+
+      <div class="progress-bar"><div id="dsmProgress" class="progress-fill"></div></div>
+
+      <div class="tracker">
+        <h3>Criterion Tracker</h3>
+        <div class="row small">A1 Inattention: <span id="tA1" class="pill pending">0/9</span> A2 Hyper/Imp: <span id="tA2" class="pill pending">0/9</span> B Onset <12: <span id="tB" class="pill pending">—</span> C ≥2 settings: <span id="tC" class="pill pending">—</span> D Impairment: <span id="tD" class="pill pending">—</span> E ≥6 mo: <span id="tE" class="pill pending">—</span> F Rule-out: <span id="tF" class="pill pending">—</span></div>
+      </div>
+
+      <div id="dsmCard" class="card">
+        <div class="q-num" id="dsmQNum"></div>
+        <div class="q-text" id="dsmQText"></div>
+        <div class="options" id="dsmOpts"></div>
+      </div>
+
+      <div class="nav">
+        <button class="btn secondary" id="dsmPrev" disabled>Previous</button>
+        <button class="btn" id="dsmNext" disabled>Next</button>
       </div>
     </div>
 
     <!-- Report -->
     <div id="report" class="section report">
+      <div class="phase-indicator">
+        <h3>Assessment Complete</h3>
+        <div class="small">Comprehensive clinical report with recommendations</div>
+      </div>
+
       <div id="diag" class="diag"><h2 id="diagTitle"></h2><div id="diagText" style="margin-top:6px"></div></div>
 
       <div class="grid">
         <div class="card">
-          <h3>Assessment Summary</h3>
-          <div id="sum"></div>
+          <h3>Session Summary</h3>
+          <div id="sessionSummary"></div>
         </div>
         <div class="card">
-          <h3>Symptom Counts</h3>
+          <h3>Clinical History</h3>
+          <div id="clinicalHistory"></div>
+        </div>
+        <div class="card">
+          <h3>DSM-5 Symptom Counts</h3>
           <div id="counts"></div>
         </div>
         <div class="card">
-          <h3>DSM‑5 Criteria Status</h3>
+          <h3>DSM-5 Criteria Status</h3>
           <div id="status"></div>
         </div>
         <div class="card">
-          <h3>Rule‑Out Screen (Flags)</h3>
+          <h3>Rule-Out Screen (Flags)</h3>
           <div id="flags"></div>
         </div>
         <div class="card">
-          <h3>Medication Considerations (CADDRA — Stimulants)</h3>
+          <h3>Medication Considerations (CADDRA)</h3>
           <div id="meds"></div>
         </div>
         <div class="card">
-          <h3>Next Steps</h3>
+          <h3>Clinical Recommendations</h3>
           <div id="nextsteps"></div>
         </div>
       </div>
 
       <div class="print-row">
         <button class="btn" onclick="window.print()">Print Report</button>
-        <button class="btn" style="margin-left:10px" id="newBtn">New Assessment</button>
+        <button class="btn secondary" style="margin-left:10px" id="newBtn">New Assessment</button>
       </div>
-
-      <details id="devtests" style="display:none;margin-top:16px" class="card">
-        <summary><strong>Developer Tests</strong></summary>
-        <ul id="test-results" style="margin-left:18px;line-height:1.6"></ul>
-      </details>
     </div>
   </div>
 
   <script>
-  // Wrap everything so nothing runs before the DOM is ready
   document.addEventListener('DOMContentLoaded', () => {
-    // --- Questions ---
+    // Clinical Assessment Questions
+    const clinicalQuestions = [
+      {
+        id: 'presenting_concern',
+        text: 'What brings you in today?',
+        type: 'textarea',
+        placeholder: 'Document patient\'s presenting concerns in their own words...'
+      },
+      {
+        id: 'symptom_onset',
+        text: 'When did these symptoms start, and how have they changed over time?',
+        type: 'textarea',
+        placeholder: 'Timeline of symptom development and progression...'
+      },
+      {
+        id: 'environmental_factors',
+        text: 'Are there particular times, tasks, or environments where things get harder or easier?',
+        type: 'textarea',
+        placeholder: 'Situational factors, triggers, or improvements...'
+      },
+      {
+        id: 'symptom_progression',
+        text: 'Have things been getting better, worse, or staying about the same?',
+        type: 'select',
+        options: [
+          { value: 'getting_better', label: 'Getting Better' },
+          { value: 'getting_worse', label: 'Getting Worse' },
+          { value: 'staying_same', label: 'Staying the Same' },
+          { value: 'fluctuating', label: 'Fluctuating' }
+        ]
+      },
+      {
+        id: 'previous_treatment',
+        text: 'Have you ever spoken to another provider about this? Any previous assessments or medications tried?',
+        type: 'textarea',
+        placeholder: 'Previous evaluations, diagnoses, treatments attempted...'
+      },
+      {
+        id: 'treatment_response',
+        text: 'How did previous treatments go — any benefit or side effects you recall?',
+        type: 'textarea',
+        placeholder: 'Response to previous interventions, side effects, reasons for discontinuation...'
+      },
+      {
+        id: 'sleep_appetite',
+        text: 'Any recent changes in sleep, appetite, bowel habits, or weight?',
+        type: 'textarea',
+        placeholder: 'Sleep quality/duration, appetite changes, GI symptoms, weight changes...'
+      },
+      {
+        id: 'vital_signs',
+        text: 'When was your last blood pressure or heart rate check? Any known cardiovascular issues?',
+        type: 'textarea',
+        placeholder: 'Recent vitals, cardiovascular history, current BP/HR if known...'
+      },
+      {
+        id: 'allergies',
+        text: 'Do you have any known allergies to medications?',
+        type: 'textarea',
+        placeholder: 'Drug allergies, reactions, intolerances...'
+      },
+      {
+        id: 'medical_history',
+        text: 'Any chronic medical conditions or significant medical history?',
+        type: 'textarea',
+        placeholder: 'Chronic illnesses, surgeries, hospitalizations, ongoing medical care...'
+      },
+      {
+        id: 'current_medications',
+        text: 'What medications are you currently taking (including over-the-counter and supplements)?',
+        type: 'textarea',
+        placeholder: 'All current medications with doses, frequency, and duration...'
+      }
+    ];
+
+    // DSM-5 Questions (existing structure)
     const A1 = [
       "Often fails to give close attention to details or makes careless mistakes in schoolwork, at work, or with other activities",
       "Often has trouble holding attention on tasks or play activities",
@@ -177,63 +324,68 @@
       "Often interrupts or intrudes on others"
     ];
 
-    // Transform A1/A2 into objects
     const A1q = A1.map((text, i) => ({ id: `A1_${i+1}`, criterion: 'A1', domain: 'inattention', text, type: 'likert4' }));
     const A2q = A2.map((text, i) => ({ id: `A2_${i+1}`, criterion: 'A2', domain: 'hyperimp', text, type: 'likert4' }));
 
-    // B–F (evidence‑based, brief screeners)
     const BFq = [
-      // B: onset
-      { id:'B_onset', criterion:'B', text:'Were several ADHD‑like symptoms present before age 12?', type:'yn_unsure' },
-      // C: settings (ask three yes/no; need ≥2 yes)
+      { id:'B_onset', criterion:'B', text:'Were several ADHD-like symptoms present before age 12?', type:'yn_unsure' },
       { id:'C_home', criterion:'C', text:'Are symptoms present at home?', type:'yn' },
       { id:'C_school_work', criterion:'C', text:'Are symptoms present at school/work?', type:'yn' },
       { id:'C_social', criterion:'C', text:'Are symptoms present with friends/relatives or in other activities?', type:'yn' },
-      // D: impairment
       { id:'D_impair', criterion:'D', text:'Do symptoms cause clear functional impairment (social/academic/occupational)?', type:'severity4' },
-      // E: duration
       { id:'E_duration', criterion:'E', text:'Have symptoms been present for at least 6 months?', type:'yn_unsure' },
-      // F: rule‑outs / comorbidity flags (brief screens; not diagnostic)
-      // PHQ‑2
       { id:'F_dep_interest', criterion:'F', text:'Past 2 weeks: little interest or pleasure in doing things?', type:'yn' },
       { id:'F_dep_down', criterion:'F', text:'Past 2 weeks: feeling down, depressed, or hopeless?', type:'yn' },
-      // GAD‑2
       { id:'F_anx_nervous', criterion:'F', text:'Past 2 weeks: feeling nervous, anxious, or on edge?', type:'yn' },
       { id:'F_anx_control', criterion:'F', text:'Past 2 weeks: not being able to stop or control worrying?', type:'yn' },
-      // Mania/hypomania stem (MDQ‑style prompt condensed)
       { id:'F_mania', criterion:'F', text:'History of several days of abnormally elevated/irritable mood with much less need for sleep and increased activity?', type:'yn' },
-      // Psychosis
       { id:'F_psychosis', criterion:'F', text:'Ever had hallucinations or fixed false beliefs (delusions)?', type:'yn' },
-      // Substance use
-      { id:'F_substance', criterion:'F', text:'Past year: episodes of heavy alcohol use or non‑medical drug use?', type:'yn' },
-      // Sleep disorder
+      { id:'F_substance', criterion:'F', text:'Past year: episodes of heavy alcohol use or non-medical drug use?', type:'yn' },
       { id:'F_sleep', criterion:'F', text:'Significant sleep problems (insomnia; loud snoring/gasping; witnessed apneas; unrefreshing sleep)?', type:'yn' },
-      // Learning difficulties
       { id:'F_learning', criterion:'F', text:'History of learning difficulties or need for educational/work accommodations?', type:'yn' },
-      // Trauma/PTSD features
       { id:'F_trauma', criterion:'F', text:'Exposure to trauma with intrusive memories, hyperarousal, or avoidance affecting concentration?', type:'yn' },
-      // Stimulant contraindications — compact screen (CADDRA)
-      { id:'F_stim_contra', criterion:'F', text:'Stimulant contraindications per CADDRA: any of the following present now or uncontrolled — MAOI/RIMA use within 14 days; narrow‑angle glaucoma; untreated hyperthyroidism; pheochromocytoma; moderate‑to‑severe hypertension or symptomatic cardiovascular disease; known hypersensitivity to stimulants?', type:'yn_unsure' }
+      { id:'F_stim_contra', criterion:'F', text:'Stimulant contraindications per CADDRA: any of the following present now or uncontrolled — MAOI/RIMA use within 14 days; narrow-angle glaucoma; untreated hyperthyroidism; pheochromocytoma; moderate-to-severe hypertension or symptomatic cardiovascular disease; known hypersensitivity to stimulants?', type:'yn_unsure' }
     ];
 
-    const questions = [...A1q, ...A2q, ...BFq];
+    const dsmQuestions = [...A1q, ...A2q, ...BFq];
 
-    // --- State ---
-    let idx = 0;
-    let responses = {}; // id -> value
+    // State variables
+    let clinicalIdx = 0;
+    let dsmIdx = 0;
+    let clinicalResponses = {};
+    let dsmResponses = {};
+    let sessionData = {};
     let patientAge = null;
 
+          // Element references
     const els = {
       login: document.getElementById('login'),
-      pinfo: document.getElementById('pinfo'),
-      assess: document.getElementById('assessment'),
+      sessionOpening: document.getElementById('sessionOpening'),
+      clinicalAssessment: document.getElementById('clinicalAssessment'),
+      dsmAssessment: document.getElementById('dsmAssessment'),
       report: document.getElementById('report'),
-      pfill: document.getElementById('pfill'),
-      qnum: document.getElementById('qnum'),
-      qtext: document.getElementById('qtext'),
-      opts: document.getElementById('opts'),
-      prev: document.getElementById('prev'),
-      next: document.getElementById('next'),
+      
+      // Session opening elements
+      patientAge: document.getElementById('patientAge'),
+      sessionErr: document.getElementById('sessionErr'),
+      
+      // Clinical assessment elements
+      clinicalProgress: document.getElementById('clinicalProgress'),
+      clinicalQNum: document.getElementById('clinicalQNum'),
+      clinicalQText: document.getElementById('clinicalQText'),
+      clinicalInput: document.getElementById('clinicalInput'),
+      clinicalPrev: document.getElementById('clinicalPrev'),
+      clinicalNext: document.getElementById('clinicalNext'),
+      
+      // DSM assessment elements
+      dsmProgress: document.getElementById('dsmProgress'),
+      dsmQNum: document.getElementById('dsmQNum'),
+      dsmQText: document.getElementById('dsmQText'),
+      dsmOpts: document.getElementById('dsmOpts'),
+      dsmPrev: document.getElementById('dsmPrev'),
+      dsmNext: document.getElementById('dsmNext'),
+      
+      // Tracker elements
       tA1: document.getElementById('tA1'),
       tA2: document.getElementById('tA2'),
       tB: document.getElementById('tB'),
@@ -241,335 +393,484 @@
       tD: document.getElementById('tD'),
       tE: document.getElementById('tE'),
       tF: document.getElementById('tF'),
+      
+      // Report elements
       diag: document.getElementById('diag'),
       diagTitle: document.getElementById('diagTitle'),
       diagText: document.getElementById('diagText'),
-      sum: document.getElementById('sum'),
+      sessionSummary: document.getElementById('sessionSummary'),
+      clinicalHistory: document.getElementById('clinicalHistory'),
       counts: document.getElementById('counts'),
       status: document.getElementById('status'),
       flags: document.getElementById('flags'),
       meds: document.getElementById('meds'),
       nextsteps: document.getElementById('nextsteps'),
+      
+      // Buttons
       accessBtn: document.getElementById('accessBtn'),
-      beginBtn: document.getElementById('beginBtn'),
-      newBtn: document.getElementById('newBtn'),
-      testsPanel: document.getElementById('devtests'),
-      testList: document.getElementById('test-results')
+      startClinicalBtn: document.getElementById('startClinicalBtn'),
+      newBtn: document.getElementById('newBtn')
     };
 
-    // --- Core functions ---
-    function authenticate(){
+    // Authentication
+    function authenticate() {
       const pw = document.getElementById('pw').value;
-      if(pw !== 'ADHD'){
+      if (pw !== 'ADHD') {
         const e = document.getElementById('loginErr');
-        e.style.display='block';
+        e.style.display = 'block';
         return;
       }
-      els.login.style.display='none';
-      els.pinfo.style.display='block';
+      els.login.style.display = 'none';
+      els.sessionOpening.style.display = 'block';
     }
 
-    function startAssessment(){
-      const ageVal = parseInt(document.getElementById('age').value,10);
-      if(!ageVal || ageVal < 4 || ageVal > 100){
-        document.getElementById('ageErr').style.display='block';
+    // Start clinical assessment
+    function startClinical() {
+      const age = parseInt(els.patientAge.value, 10);
+
+      if (!age || age < 4 || age > 100) {
+        els.sessionErr.style.display = 'block';
         return;
       }
-      patientAge = ageVal;
-      els.pinfo.style.display='none';
-      els.assess.style.display='block';
-      renderQ();
+
+      patientAge = age;
+      els.sessionOpening.style.display = 'none';
+      els.clinicalAssessment.style.display = 'block';
+      renderClinicalQuestion();
+    }
+
+    // Render clinical assessment questions
+    function renderClinicalQuestion() {
+      if (clinicalIdx >= clinicalQuestions.length) {
+        startDSMAssessment();
+        return;
+      }
+
+      const q = clinicalQuestions[clinicalIdx];
+      const total = clinicalQuestions.length;
+      els.clinicalQNum.textContent = `Clinical Assessment ${clinicalIdx + 1} of ${total}`;
+      els.clinicalQText.innerHTML = `<strong>${q.text}</strong>`;
+
+      let inputHtml = '';
+      const current = clinicalResponses[q.id] || '';
+
+      if (q.type === 'textarea') {
+        inputHtml = `<textarea id="clinicalTextarea" placeholder="${q.placeholder}">${current}</textarea>`;
+      } else if (q.type === 'select') {
+        inputHtml = '<select id="clinicalSelect"><option value="">Select an option...</option>';
+        q.options.forEach(opt => {
+          const selected = current === opt.value ? 'selected' : '';
+          inputHtml += `<option value="${opt.value}" ${selected}>${opt.label}</option>`;
+        });
+        inputHtml += '</select>';
+      }
+
+      els.clinicalInput.innerHTML = inputHtml;
+
+      // Add event listeners
+      const input = els.clinicalInput.querySelector('textarea, select');
+      if (input) {
+        input.addEventListener('input', () => {
+          clinicalResponses[q.id] = input.value;
+          els.clinicalNext.disabled = !input.value.trim();
+        });
+        
+        // Trigger initial state
+        if (input.value) {
+          els.clinicalNext.disabled = false;
+        }
+      }
+
+      els.clinicalPrev.disabled = clinicalIdx === 0;
+      els.clinicalNext.disabled = !current;
+
+      const pct = Math.round((clinicalIdx / total) * 100);
+      els.clinicalProgress.style.width = pct + '%';
+    }
+
+    // Navigate clinical questions
+    function nextClinical() {
+      if (clinicalIdx < clinicalQuestions.length - 1) {
+        clinicalIdx++;
+        renderClinicalQuestion();
+      } else {
+        startDSMAssessment();
+      }
+    }
+
+    function prevClinical() {
+      if (clinicalIdx > 0) {
+        clinicalIdx--;
+        renderClinicalQuestion();
+      }
+    }
+
+    // Start DSM assessment
+    function startDSMAssessment() {
+      els.clinicalAssessment.style.display = 'none';
+      els.dsmAssessment.style.display = 'block';
+      renderDSMQuestion();
       updateTracker();
     }
 
-    function renderQ(){
-      if(idx >= questions.length){
-        return showReport();
+    // Render DSM questions
+    function renderDSMQuestion() {
+      if (dsmIdx >= dsmQuestions.length) {
+        showReport();
+        return;
       }
-      const q = questions[idx];
-      const total = questions.length;
-      els.qnum.textContent = `Question ${idx+1} of ${total}`;
 
-      if(q.criterion==='A1'){
-        els.qtext.innerHTML = `<strong>Inattention Symptom ${q.id.split('_')[1]}:</strong><br>${q.text}`;
-      } else if(q.criterion==='A2'){
-        els.qtext.innerHTML = `<strong>Hyperactivity/Impulsivity Symptom ${q.id.split('_')[1]}:</strong><br>${q.text}`;
+      const q = dsmQuestions[dsmIdx];
+      const total = dsmQuestions.length;
+      els.dsmQNum.textContent = `DSM-5 Question ${dsmIdx + 1} of ${total}`;
+
+      if (q.criterion === 'A1') {
+        els.dsmQText.innerHTML = `<strong>Inattention Symptom ${q.id.split('_')[1]}:</strong><br>${q.text}`;
+      } else if (q.criterion === 'A2') {
+        els.dsmQText.innerHTML = `<strong>Hyperactivity/Impulsivity Symptom ${q.id.split('_')[1]}:</strong><br>${q.text}`;
       } else {
-        els.qtext.innerHTML = `<strong>Criterion ${q.criterion}:</strong><br>${q.text}`;
+        els.dsmQText.innerHTML = `<strong>Criterion ${q.criterion}:</strong><br>${q.text}`;
       }
 
       let optsHtml = '';
-      const current = responses[q.id];
-      const make = (val, label) => `<div class="opt ${current===val?'selected':''}" data-val="${val}">${label}</div>`;
+      const current = dsmResponses[q.id];
+      const make = (val, label) => `<div class="opt ${current === val ? 'selected' : ''}" data-val="${val}">${label}</div>`;
 
-      if(q.type==='likert4'){
-        optsHtml += make('never','Never/Rarely');
-        optsHtml += make('sometimes','Sometimes');
-        optsHtml += make('often','Often');
-        optsHtml += make('very_often','Very Often');
-      } else if(q.type==='yn'){
-        optsHtml += make('yes','Yes');
-        optsHtml += make('no','No');
-      } else if(q.type==='yn_unsure'){
-        optsHtml += make('yes','Yes');
-        optsHtml += make('no','No');
-        optsHtml += make('unsure','Unsure');
-      } else if(q.type==='severity4'){
-        optsHtml += make('none','None');
-        optsHtml += make('mild','Mild');
-        optsHtml += make('moderate','Moderate');
-        optsHtml += make('severe','Severe');
+      if (q.type === 'likert4') {
+        optsHtml += make('never', 'Never/Rarely');
+        optsHtml += make('sometimes', 'Sometimes');
+        optsHtml += make('often', 'Often');
+        optsHtml += make('very_often', 'Very Often');
+      } else if (q.type === 'yn') {
+        optsHtml += make('yes', 'Yes');
+        optsHtml += make('no', 'No');
+      } else if (q.type === 'yn_unsure') {
+        optsHtml += make('yes', 'Yes');
+        optsHtml += make('no', 'No');
+        optsHtml += make('unsure', 'Unsure');
+      } else if (q.type === 'severity4') {
+        optsHtml += make('none', 'None');
+        optsHtml += make('mild', 'Mild');
+        optsHtml += make('moderate', 'Moderate');
+        optsHtml += make('severe', 'Severe');
       }
 
-      els.opts.innerHTML = optsHtml;
-      Array.from(els.opts.children).forEach(el=>{
-        el.addEventListener('click', (e)=>{
-          Array.from(els.opts.children).forEach(x=>x.classList.remove('selected'));
+      els.dsmOpts.innerHTML = optsHtml;
+      Array.from(els.dsmOpts.children).forEach(el => {
+        el.addEventListener('click', (e) => {
+          Array.from(els.dsmOpts.children).forEach(x => x.classList.remove('selected'));
           e.currentTarget.classList.add('selected');
-          responses[q.id] = e.currentTarget.getAttribute('data-val');
-          els.next.disabled = false;
+          dsmResponses[q.id] = e.currentTarget.getAttribute('data-val');
+          els.dsmNext.disabled = false;
           updateTracker();
         });
       });
 
-      els.prev.disabled = idx===0;
-      els.next.disabled = !responses[q.id];
-      const pct = Math.round((idx/total)*100);
-      els.pfill.style.width = pct + '%';
+      els.dsmPrev.disabled = dsmIdx === 0;
+      els.dsmNext.disabled = !dsmResponses[q.id];
+      const pct = Math.round((dsmIdx / dsmQuestions.length) * 100);
+      els.dsmProgress.style.width = pct + '%';
     }
 
-    function nextQ(){
-      if(idx < questions.length - 1){ idx++; renderQ(); } else { showReport(); }
+    // Navigate DSM questions
+    function nextDSM() {
+      if (dsmIdx < dsmQuestions.length - 1) {
+        dsmIdx++;
+        renderDSMQuestion();
+      } else {
+        showReport();
+      }
     }
-    function prevQ(){ if(idx>0){ idx--; renderQ(); } }
 
-    function countA(crit){
-      const arr = questions.filter(q=>q.criterion===crit);
+    function prevDSM() {
+      if (dsmIdx > 0) {
+        dsmIdx--;
+        renderDSMQuestion();
+      }
+    }
+
+    // Utility functions
+    function countA(crit) {
+      const arr = dsmQuestions.filter(q => q.criterion === crit);
       let n = 0;
-      for(const q of arr){ if(responses[q.id]==='often' || responses[q.id]==='very_often') n++; }
+      for (const q of arr) {
+        if (dsmResponses[q.id] === 'often' || dsmResponses[q.id] === 'very_often') n++;
+      }
       return n;
     }
 
-    function updateTracker(){
+    function updateTracker() {
       const isAdult = patientAge >= 18;
       const req = isAdult ? 5 : 6;
       const a1 = countA('A1');
       const a2 = countA('A2');
 
-      pill(els.tA1, `${a1}/9`, a1>=req ? 'ok' : (a1>0 ? 'pending':'pending'));
-      pill(els.tA2, `${a2}/9`, a2>=req ? 'ok' : (a2>0 ? 'pending':'pending'));
+      pill(els.tA1, `${a1}/9`, a1 >= req ? 'ok' : (a1 > 0 ? 'pending' : 'pending'));
+      pill(els.tA2, `${a2}/9`, a2 >= req ? 'ok' : (a2 > 0 ? 'pending' : 'pending'));
 
-      const b = responses['B_onset'];
+      const b = dsmResponses['B_onset'];
       setYN(els.tB, b);
 
-      const cYes = ['C_home','C_school_work','C_social'].reduce((s,k)=> s + (responses[k]==='yes' ? 1:0), 0);
+      const cYes = ['C_home', 'C_school_work', 'C_social'].reduce((s, k) => s + (dsmResponses[k] === 'yes' ? 1 : 0), 0);
       els.tC.textContent = cYes ? `${cYes} setting(s)` : '—';
-      els.tC.className = 'pill ' + (cYes>=2 ? 'ok' : (cYes>0 ? 'pending':'pending'));
+      els.tC.className = 'pill ' + (cYes >= 2 ? 'ok' : (cYes > 0 ? 'pending' : 'pending'));
 
-      const d = responses['D_impair'];
-      if(!d){ els.tD.textContent='—'; els.tD.className='pill pending'; }
-      else if(d==='moderate' || d==='severe'){ pill(els.tD, d, 'ok'); } else if(d==='mild'){ pill(els.tD, d, 'pending'); } else { pill(els.tD, d, 'no'); }
+      const d = dsmResponses['D_impair'];
+      if (!d) {
+        els.tD.textContent = '—';
+        els.tD.className = 'pill pending';
+      } else if (d === 'moderate' || d === 'severe') {
+        pill(els.tD, d, 'ok');
+      } else if (d === 'mild') {
+        pill(els.tD, d, 'pending');
+      } else {
+        pill(els.tD, d, 'no');
+      }
 
-      setYN(els.tE, responses['E_duration']);
+      setYN(els.tE, dsmResponses['E_duration']);
 
       const flags = computeRuleOutFlags();
-      if(flags.alert>0) pill(els.tF, `${flags.alert} alert(s)`, 'no');
-      else if(flags.caution>0) pill(els.tF, `${flags.caution} caution(s)`, 'pending');
+      if (flags.alert > 0) pill(els.tF, `${flags.alert} alert(s)`, 'no');
+      else if (flags.caution > 0) pill(els.tF, `${flags.caution} caution(s)`, 'pending');
       else pill(els.tF, 'clear', 'ok');
     }
 
-    function pill(el, text, kind){ el.textContent = text; el.className = 'pill ' + kind; }
-    function setYN(el, val){
-      if(!val){ el.textContent='—'; el.className='pill pending'; return; }
-      if(val==='yes') pill(el,'Yes','ok');
-      else if(val==='no') pill(el,'No','no');
-      else pill(el,'Unsure','pending');
+    function pill(el, text, kind) {
+      el.textContent = text;
+      el.className = 'pill ' + kind;
     }
 
-    function computeRuleOutFlags(){
-      const yes = (k)=> responses[k]==='yes';
-      const unsure = (k)=> responses[k]==='unsure';
-      let alert = 0, caution = 0; const notes=[];
-
-      if(yes('F_dep_interest') && yes('F_dep_down')){ caution++; notes.push('Depression screen positive (PHQ‑2).'); }
-      if(yes('F_anx_nervous') && yes('F_anx_control')){ caution++; notes.push('Anxiety screen positive (GAD‑2).'); }
-      if(yes('F_mania')){ alert++; notes.push('Possible bipolar spectrum (mania/hypomania).'); }
-      if(yes('F_psychosis')){ alert++; notes.push('Possible psychosis.'); }
-      if(yes('F_substance')){ caution++; notes.push('Substance use risk.'); }
-      if(yes('F_sleep')){ caution++; notes.push('Sleep disorder risk (e.g., OSA/insomnia).'); }
-      if(yes('F_learning')){ caution++; notes.push('Learning disorder/history of accommodations.'); }
-      if(yes('F_trauma')){ caution++; notes.push('Trauma/PTSD features impacting concentration.'); }
-      if(yes('F_stim_contra')){ alert++; notes.push('Stimulant contraindication reported (CADDRA).'); }
-      else if(unsure('F_stim_contra')){ caution++; notes.push('Possible stimulant contraindication — verify per CADDRA.'); }
-
-      return {alert, caution, notes};
+    function setYN(el, val) {
+      if (!val) {
+        el.textContent = '—';
+        el.className = 'pill pending';
+        return;
+      }
+      if (val === 'yes') pill(el, 'Yes', 'ok');
+      else if (val === 'no') pill(el, 'No', 'no');
+      else pill(el, 'Unsure', 'pending');
     }
 
-    function showReport(){
-      els.assess.style.display='none';
-      els.report.style.display='block';
+    function computeRuleOutFlags() {
+      const yes = (k) => dsmResponses[k] === 'yes';
+      const unsure = (k) => dsmResponses[k] === 'unsure';
+      let alert = 0, caution = 0;
+      const notes = [];
+
+      if (yes('F_dep_interest') && yes('F_dep_down')) {
+        caution++;
+        notes.push('Depression screen positive (PHQ-2).');
+      }
+      if (yes('F_anx_nervous') && yes('F_anx_control')) {
+        caution++;
+        notes.push('Anxiety screen positive (GAD-2).');
+      }
+      if (yes('F_mania')) {
+        alert++;
+        notes.push('Possible bipolar spectrum (mania/hypomania).');
+      }
+      if (yes('F_psychosis')) {
+        alert++;
+        notes.push('Possible psychosis.');
+      }
+      if (yes('F_substance')) {
+        caution++;
+        notes.push('Substance use risk.');
+      }
+      if (yes('F_sleep')) {
+        caution++;
+        notes.push('Sleep disorder risk (e.g., OSA/insomnia).');
+      }
+      if (yes('F_learning')) {
+        caution++;
+        notes.push('Learning disorder/history of accommodations.');
+      }
+      if (yes('F_trauma')) {
+        caution++;
+        notes.push('Trauma/PTSD features impacting concentration.');
+      }
+      if (yes('F_stim_contra')) {
+        alert++;
+        notes.push('Stimulant contraindication reported (CADDRA).');
+      } else if (unsure('F_stim_contra')) {
+        caution++;
+        notes.push('Possible stimulant contraindication — verify per CADDRA.');
+      }
+
+      return { alert, caution, notes };
+    }
+
+    function showReport() {
+      els.dsmAssessment.style.display = 'none';
+      els.report.style.display = 'block';
       generateReport();
     }
 
-    function generateReport(){
-      const isAdult = patientAge >= 18; const req = isAdult ? 5 : 6;
+    function generateReport() {
+      const isAdult = patientAge >= 18;
+      const req = isAdult ? 5 : 6;
       const a1 = countA('A1');
       const a2 = countA('A2');
-      const A1met = a1 >= req; const A2met = a2 >= req;
+      const A1met = a1 >= req;
+      const A2met = a2 >= req;
 
-      const Bmet = responses['B_onset']==='yes';
-      const Ccount = ['C_home','C_school_work','C_social'].reduce((s,k)=> s + (responses[k]==='yes' ? 1:0), 0);
+      const Bmet = dsmResponses['B_onset'] === 'yes';
+      const Ccount = ['C_home', 'C_school_work', 'C_social'].reduce((s, k) => s + (dsmResponses[k] === 'yes' ? 1 : 0), 0);
       const Cmet = Ccount >= 2;
-      const Dmet = (responses['D_impair']==='moderate' || responses['D_impair']==='severe');
-      const Emet = responses['E_duration']==='yes';
-      const {alert, caution, notes} = computeRuleOutFlags();
-      const Fstatus = alert>0 ? 'Not Met (serious rule‑outs present)' : (caution>0 ? 'Pending (possible comorbidities)' : 'Met');
-      const Fmet = alert===0 && caution===0;
+      const Dmet = (dsmResponses['D_impair'] === 'moderate' || dsmResponses['D_impair'] === 'severe');
+      const Emet = dsmResponses['E_duration'] === 'yes';
+      const { alert, caution, notes } = computeRuleOutFlags();
+      const Fstatus = alert > 0 ? 'Not Met (serious rule-outs present)' : (caution > 0 ? 'Pending (possible comorbidities)' : 'Met');
+      const Fmet = alert === 0 && caution === 0;
 
-      let className='negative', title='', text='';
+      let className = 'negative', title = '', text = '';
       const anyA = A1met || A2met;
       const coreMet = (A1met || A2met) && Bmet && Cmet && Dmet && Emet;
 
-      if(coreMet && Fmet){
-        className='positive';
-        title='Meets DSM‑5 Criteria for ADHD (presentation determined by A1/A2)';
-        text='All criteria A–F are satisfied. Corroborate with collateral information and proceed with shared decision‑making.';
-      } else if(coreMet && !Fmet){
-        className='provisional';
-        title='Provisional ADHD — rule‑outs/comorbidities flagged';
-        text='Core criteria A–E met, but potential differential diagnoses or comorbidities require evaluation (Criterion F not fully met).';
-      } else if(anyA){
-        className='provisional';
-        title='ADHD symptoms present — additional criteria not fully met';
-        text='Symptoms meet threshold in at least one domain, but one or more of B–E not satisfied/unsure. Gather collateral and reassess.';
+      if (coreMet && Fmet) {
+        className = 'positive';
+        title = 'Meets DSM-5 Criteria for ADHD (presentation determined by A1/A2)';
+        text = 'All criteria A–F are satisfied. Corroborate with collateral information and proceed with shared decision-making.';
+      } else if (coreMet && !Fmet) {
+        className = 'provisional';
+        title = 'Provisional ADHD — rule-outs/comorbidities flagged';
+        text = 'Core criteria A–E met, but potential differential diagnoses or comorbidities require evaluation (Criterion F not fully met).';
+      } else if (anyA) {
+        className = 'provisional';
+        title = 'ADHD symptoms present — additional criteria not fully met';
+        text = 'Symptoms meet threshold in at least one domain, but one or more of B–E not satisfied/unsure. Gather collateral and reassess.';
       } else {
-        className='negative';
-        title='DSM‑5 Symptom Criteria Not Met';
-        text='Threshold not met for core ADHD symptom domains. Consider alternative explanations and re‑evaluation if concerns persist.';
+        className = 'negative';
+        title = 'DSM-5 Symptom Criteria Not Met';
+        text = 'Threshold not met for core ADHD symptom domains. Consider alternative explanations and re-evaluation if concerns persist.';
       }
 
       els.diag.className = 'diag ' + className;
       els.diagTitle.textContent = title;
       els.diagText.textContent = text;
 
-      els.sum.innerHTML = `
+      // Session Summary
+      els.sessionSummary.innerHTML = `
         <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
         <p><strong>Patient Age:</strong> ${patientAge}</p>
-        <p><strong>Assessment Type:</strong> ${isAdult? 'Adult (\u226518 years)':'Child/Adolescent (<18 years)'} </p>
-        <p><strong>Total Questions Completed:</strong> ${Object.keys(responses).length}/${questions.length}</p>
+        <p><strong>Assessment Type:</strong> ${isAdult ? 'Adult (≥18 years)' : 'Child/Adolescent (<18 years)'}</p>
+        <p><strong>Clinical Questions Completed:</strong> ${Object.keys(clinicalResponses).length}/${clinicalQuestions.length}</p>
+        <p><strong>DSM-5 Questions Completed:</strong> ${Object.keys(dsmResponses).length}/${dsmQuestions.length}</p>
       `;
 
+      // Clinical History
+      const clinicalSummary = [];
+      if (clinicalResponses.presenting_concern) {
+        clinicalSummary.push(`<strong>Presenting Concern:</strong> ${clinicalResponses.presenting_concern}`);
+      }
+      if (clinicalResponses.symptom_onset) {
+        clinicalSummary.push(`<strong>Symptom History:</strong> ${clinicalResponses.symptom_onset}`);
+      }
+      if (clinicalResponses.previous_treatment) {
+        clinicalSummary.push(`<strong>Previous Treatment:</strong> ${clinicalResponses.previous_treatment}`);
+      }
+      if (clinicalResponses.current_medications) {
+        clinicalSummary.push(`<strong>Current Medications:</strong> ${clinicalResponses.current_medications}`);
+      }
+      if (clinicalResponses.medical_history) {
+        clinicalSummary.push(`<strong>Medical History:</strong> ${clinicalResponses.medical_history}`);
+      }
+      els.clinicalHistory.innerHTML = clinicalSummary.map(item => `<p>${item}</p>`).join('');
+
+      // Symptom counts
       els.counts.innerHTML = `
         <p><strong>Inattention (A1):</strong> ${a1}/9 (required: ${req})</p>
         <p><strong>Hyperactivity/Impulsivity (A2):</strong> ${a2}/9 (required: ${req})</p>
       `;
 
-      const pres = A1met && A2met ? 'Combined' : (A1met ? 'Predominantly Inattentive' : (A2met ? 'Predominantly Hyperactive‑Impulsive' : '—'));
+      // DSM-5 status
+      const pres = A1met && A2met ? 'Combined' : (A1met ? 'Predominantly Inattentive' : (A2met ? 'Predominantly Hyperactive-Impulsive' : '—'));
       els.status.innerHTML = `
         <ul style="margin-left:18px;line-height:1.7">
-          <li><strong>A1 (Inattention):</strong> ${A1met? '✓ Met':'✗ Not Met'} (${a1}/${req})</li>
-          <li><strong>A2 (Hyperactivity/Impulsivity):</strong> ${A2met? '✓ Met':'✗ Not Met'} (${a2}/${req})</li>
+          <li><strong>A1 (Inattention):</strong> ${A1met ? '✓ Met' : '✗ Not Met'} (${a1}/${req})</li>
+          <li><strong>A2 (Hyperactivity/Impulsivity):</strong> ${A2met ? '✓ Met' : '✗ Not Met'} (${a2}/${req})</li>
           <li><strong>Presentation:</strong> ${pres}</li>
-          <li><strong>B (Onset <12):</strong> ${Bmet? '✓ Met':'✗ Not Met/Unsure'}</li>
-          <li><strong>C (≥2 Settings):</strong> ${Cmet? '✓ Met':'✗ Not Met'} (${Ccount} settings)</li>
-          <li><strong>D (Impairment):</strong> ${Dmet? '✓ Met':'✗ Not Met/None‑Mild'}</li>
-          <li><strong>E (≥6 months):</strong> ${Emet? '✓ Met':'✗ Not Met/Unsure'}</li>
-          <li><strong>F (Rule‑out):</strong> ${Fstatus}</li>
+          <li><strong>B (Onset <12):</strong> ${Bmet ? '✓ Met' : '✗ Not Met/Unsure'}</li>
+          <li><strong>C (≥2 Settings):</strong> ${Cmet ? '✓ Met' : '✗ Not Met'} (${Ccount} settings)</li>
+          <li><strong>D (Impairment):</strong> ${Dmet ? '✓ Met' : '✗ Not Met/None-Mild'}</li>
+          <li><strong>E (≥6 months):</strong> ${Emet ? '✓ Met' : '✗ Not Met/Unsure'}</li>
+          <li><strong>F (Rule-out):</strong> ${Fstatus}</li>
         </ul>
       `;
 
-      els.flags.innerHTML = (alert===0 && caution===0)
-        ? '<p>No rule‑out/comorbidity flags triggered.</p>'
-        : `<ul style="margin-left:18px;line-height:1.7">${notes.map(n=>`<li>${n}</li>`).join('')}</ul>`;
+      // Flags
+      els.flags.innerHTML = (alert === 0 && caution === 0)
+        ? '<p>No rule-out/comorbidity flags triggered.</p>'
+        : `<ul style="margin-left:18px;line-height:1.7">${notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
 
-      // Medication considerations (CADDRA — Stimulants)
-      const stimVal = responses['F_stim_contra'];
-      const mania = responses['F_mania']==='yes';
-      const psych = responses['F_psychosis']==='yes';
+      // Medication considerations
+      const stimVal = dsmResponses['F_stim_contra'];
+      const mania = dsmResponses['F_mania'] === 'yes';
+      const psych = dsmResponses['F_psychosis'] === 'yes';
       const medsLines = [];
-      if(stimVal==='yes'){
+      if (stimVal === 'yes') {
         medsLines.push('<strong>Contraindication flagged:</strong> At least one CADDRA stimulant contraindication reported.');
-      } else if(stimVal==='unsure'){
+      } else if (stimVal === 'unsure') {
         medsLines.push('<strong>Uncertain:</strong> Possible contraindication — requires medical verification.');
       } else {
         medsLines.push('<strong>Screen clear:</strong> No stimulant contraindications reported.');
       }
-      if(mania||psych){ medsLines.push('History suggestive of mania and/or psychosis — also contraindicates stimulants.'); }
-      medsLines.push('<span class="small">CADDRA examples: MAOI/RIMA within 14 days; narrow‑angle glaucoma; untreated hyperthyroidism; pheochromocytoma; moderate–severe hypertension or symptomatic cardiovascular disease; known hypersensitivity to stimulants.</span>');
-      els.meds.innerHTML = `<ul style="margin-left:18px;line-height:1.7">${medsLines.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+      if (mania || psych) {
+        medsLines.push('History suggestive of mania and/or psychosis — also contraindicates stimulants.');
+      }
+      medsLines.push('<span class="small">CADDRA examples: MAOI/RIMA within 14 days; narrow-angle glaucoma; untreated hyperthyroidism; pheochromocytoma; moderate-severe hypertension or symptomatic cardiovascular disease; known hypersensitivity to stimulants.</span>');
+      els.meds.innerHTML = `<ul style="margin-left:18px;line-height:1.7">${medsLines.map(x => `<li>${x}</li>`).join('')}</ul>`;
 
+      // Next steps
       const steps = [];
-      if(coreMet && Fmet){
-        steps.push('Obtain collateral (parent/partner/teacher/employer reports; records).');
+      if (coreMet && Fmet) {
+        steps.push('Obtain collateral information (parent/partner/teacher/employer reports; records).');
         steps.push('Screen for common comorbidities (e.g., anxiety, depression, learning disorders) and address as needed.');
-        steps.push('Discuss evidence‑based treatment options and safety screening (e.g., cardiovascular risk, sleep).');
+        steps.push('Discuss evidence-based treatment options and conduct safety screening (e.g., cardiovascular risk, sleep).');
         steps.push('Establish monitoring plan (symptoms, adverse effects, functioning) and consider standardized scales.');
       } else {
-        if(!(A1met||A2met)) steps.push('ADHD symptom threshold not reached — consider alternative explanations and monitor.');
-        if(!responses['B_onset']) steps.push('Clarify symptom onset with school records or caregiver interview.');
-        if(!Bmet) steps.push('If onset ≥12 or unknown, consider other etiologies (learning, mood/anxiety, sleep, TBI).');
-        if(!Cmet) steps.push('Gather cross‑setting collateral (home/school/work/peers).');
-        if(!Dmet) steps.push('Document functional impairment across domains (grades, work evals, relationships).');
-        if(!Emet) steps.push('Confirm duration ≥6 months; otherwise re‑assess after appropriate interval.');
+        if (!(A1met || A2met)) steps.push('ADHD symptom threshold not reached — consider alternative explanations and monitor.');
+        if (!dsmResponses['B_onset']) steps.push('Clarify symptom onset with school records or caregiver interview.');
+        if (!Bmet) steps.push('If onset ≥12 or unknown, consider other etiologies (learning, mood/anxiety, sleep, TBI).');
+        if (!Cmet) steps.push('Gather cross-setting collateral (home/school/work/peers).');
+        if (!Dmet) steps.push('Document functional impairment across domains (grades, work evals, relationships).');
+        if (!Emet) steps.push('Confirm duration ≥6 months; otherwise re-assess after appropriate interval.');
       }
-      if(alert>0){
+      if (alert > 0) {
         steps.unshift('Prioritize assessment for bipolar disorder/psychosis before diagnosing/treating ADHD. Consider urgent referral if safety concerns.');
       }
-      if(caution>0){
-        steps.push('Address flagged comorbidities/differentials (e.g., PHQ‑9/GAD‑7, AUDIT‑C/DAST‑10, sleep study/STOP‑Bang, psychoeducational testing).');
+      if (caution > 0) {
+        steps.push('Address flagged comorbidities/differentials (e.g., PHQ-9/GAD-7, AUDIT-C/DAST-10, sleep study/STOP-Bang, psychoeducational testing).');
       }
-      if(stimVal==='yes'){
-        steps.unshift('Avoid prescribing stimulants. Evaluate/manage the contraindication (e.g., ensure ≥14‑day washout after MAOIs; assess glaucoma, hyperthyroidism, pheochromocytoma; manage moderate–severe hypertension or symptomatic cardiovascular disease; confirm no stimulant hypersensitivity). Consider non‑stimulant options and/or specialty referral.');
-      } else if(stimVal==='unsure'){
+      if (stimVal === 'yes') {
+        steps.unshift('Avoid prescribing stimulants. Evaluate/manage the contraindication and consider non-stimulant options and/or specialty referral.');
+      } else if (stimVal === 'unsure') {
         steps.unshift('Clarify potential stimulant contraindication before initiating stimulants (collateral, chart review, targeted medical evaluation).');
       }
-      steps.push('This tool is for decision support and does not replace clinical judgment.');
-      els.nextsteps.innerHTML = `<ul style="margin-left:18px;line-height:1.7">${steps.map(s=>`<li>${s}</li>`).join('')}</ul>`;
+      steps.push('This tool is for decision support and does not replace comprehensive clinical judgment.');
+      els.nextsteps.innerHTML = `<ul style="margin-left:18px;line-height:1.7">${steps.map(s => `<li>${s}</li>`).join('')}</ul>`;
     }
 
-    function resetAll(){
-      idx = 0; responses = {}; patientAge = null;
-      els.report.style.display='none';
-      els.login.style.display='block';
-      document.getElementById('pw').value='';
-      document.getElementById('age').value='';
+    function resetAll() {
+      clinicalIdx = 0;
+      dsmIdx = 0;
+      clinicalResponses = {};
+      dsmResponses = {};
+      patientAge = null;
+      els.report.style.display = 'none';
+      els.login.style.display = 'block';
+      document.getElementById('pw').value = '';
+      els.patientAge.value = '';
     }
 
-    // --- Wire up events safely ---
+    // Event listeners
     els.accessBtn.addEventListener('click', authenticate);
-    els.beginBtn.addEventListener('click', startAssessment);
-    els.prev.addEventListener('click', prevQ);
-    els.next.addEventListener('click', nextQ);
+    els.startClinicalBtn.addEventListener('click', startClinical);
+    els.clinicalPrev.addEventListener('click', prevClinical);
+    els.clinicalNext.addEventListener('click', nextClinical);
+    els.dsmPrev.addEventListener('click', prevDSM);
+    els.dsmNext.addEventListener('click', nextDSM);
     els.newBtn.addEventListener('click', resetAll);
-
-    // --- Minimal developer tests (run with ?tests=1) ---
-    function addResult(ok, msg){
-      const li = document.createElement('li');
-      li.textContent = (ok?'✅ ':'❌ ') + msg;
-      li.style.color = ok ? '#0a7c4a' : '#b71c1c';
-      els.testList.appendChild(li);
-    }
-
-    function runDevTests(){
-      try {
-        addResult(typeof authenticate === 'function', 'authenticate() is defined');
-        addResult(typeof startAssessment === 'function', 'startAssessment() is defined');
-        addResult(Array.isArray(BFq) && BFq.some(q=>q.id==='F_stim_contra'), 'CADDRA stimulant contraindication item exists');
-        // quick interaction tests (no navigation)
-        document.getElementById('pw').value='wrong';
-        authenticate();
-        addResult(document.getElementById('loginErr').style.display==='block', 'Invalid password shows error');
-        document.getElementById('loginErr').style.display='none';
-      } catch(err){
-        addResult(false, 'Unexpected error: ' + err.message);
-      }
-    }
-
-    const url = new URL(window.location.href);
-    if(url.searchParams.get('tests') === '1'){
-      els.testsPanel.style.display='block';
-      runDevTests();
-    }
   });
   </script>
 </body>
