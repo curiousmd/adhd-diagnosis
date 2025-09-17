@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ADHD Consultation — Click-Through Psychiatric Interview Guide (v11)</title>
+<style>
+  :root{
+    --bg:#0f172a;--panel:#0b1220;--ink:#e5e7eb;--muted:#94a3b8;
+    --accent:#7c3aed;--accent2:#06b6d4;--ok:#10b981;--warn:#f59e0b;--danger:#ef4444;
+    --card:#0f172a;--line:#1e293b;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(135deg,#0f172a,#1f2937);color:var(--ink)}
+  .wrap{max-width:1200px;margin:0 auto;padding:18px}
+  .hero{background:linear-gradient(135deg,#111827 0%,#0b1220 100%);border:1px solid var(--line);border-radius:16px;padding:20px 22px;display:grid;gap:8px}
+  .hero h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.2px}
+  .hero p{margin:0;color:var(--muted)}
+  .layout{margin-top:14px;display:grid;grid-template-columns:290px 1fr;gap:14px}
+  .side{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px}
+  .main{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px}
+  .step{display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;color:var(--ink);cursor:pointer;border:1px solid transparent}
+  .step:hover{background:#0f172a;border-color:#172033}
+  .step small{color:var(--muted)}
+  .step.active{background:rgba(124,58,237,.12);border-color:#3b2a63}
+  .chip{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid #27324a;color:var(--muted)}
+  .chip.start{border-color:#1b3d3a;color:#6ee7b7}
+  .chip.later{border-color:#4a2a27;color:#fda4af}
+  .bar{height:8px;background:#0f172a;border-radius:999px;overflow:hidden;margin:8px 0 0 0;border:1px solid #172033}
+  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .25s}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+  .card h3{margin:0 0 8px 0;font-size:16px}
+  .sub{color:var(--muted);font-size:13px;margin:2px 0 8px}
+  details{border:1px solid #1b2540;border-radius:10px;margin:8px 0;padding:8px;background:#0b1220}
+  details > summary{cursor:pointer;list-style:none}
+  details > summary::-webkit-details-marker{display:none}
+  summary{display:flex;align-items:center;gap:8px}
+  .tag{font-size:11px;border:1px solid #26304e;border-radius:999px;padding:2px 8px;color:#a5b4fc}
+  /* Bullet list rules */
+  .card ul{list-style:disc;padding-left:22px;margin:8px 0}
+  .card ol{list-style:decimal;padding-left:22px;margin:8px 0}
+  .card li{margin:4px 0;line-height:1.5}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  button{background:linear-gradient(135deg,var(--accent),#5b21b6);border:none;color:white;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+  button.ghost{background:#0b1220;border:1px solid #1c2542;color:var(--ink)}
+  button.secondary{background:linear-gradient(135deg,#0ea5e9,#0369a1)}
+  .tips{font-size:13px;color:var(--muted)}
+  .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;background:#0a0f1f;border:1px solid #1c2a4d;border-radius:6px;padding:2px 6px;color:#cbd5e1}
+  .pill{font-size:11px;border:1px solid #26304e;border-radius:999px;padding:2px 8px}
+  .opt{display:inline-block;border:1px solid #2a3353;border-radius:10px;padding:6px 10px;margin:4px;cursor:pointer;user-select:none}
+  .opt.sel{border-color:#7c3aed;background:#241342}
+  .badge{display:inline-block;font-size:12px;border-radius:999px;padding:2px 8px}
+  .badge.ok{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.35)}
+  .badge.no{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.35)}
+  .badge.maybe{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.35)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+  .kbdbox{display:grid;grid-template-columns:1fr auto;align-items:center}
+  .likert{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .muted{color:#94a3b8}
+  .flash{animation:flash 1.4s ease-out 1}
+  @keyframes flash{0%{box-shadow:0 0 0 0 rgba(124,58,237,.8)}100%{box-shadow:0 0 0 14px rgba(124,58,237,0)}}
+  @media(max-width:980px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>ADHD Consultation — Click-Through Psychiatric Interview Guide</h1>
+    <p>Read-along prompts for a smooth, natural interview flow. <strong>No typing anywhere.</strong> DSM-5 card is interactive and always present below.</p>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+  </div>
+
+  <div class="layout">
+    <aside class="side">
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span class="tips">Interview Flow</span>
+        <div class="row">
+          <button class="ghost" id="jumpDSM">Go to DSM-5</button>
+          <button class="ghost" id="expandAll">Expand All</button>
+          <button class="ghost" id="collapseAll">Collapse</button>
+        </div>
+      </div>
+      <div id="steps"></div>
+    </aside>
+
+    <main class="main">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div class="row">
+          <button class="ghost" id="prevBtn">Previous</button>
+          <button id="nextBtn">Next</button>
+        </div>
+        <div class="row">
+          <span class="tips">Use <span class="kbd">←</span>/<span class="kbd">→</span> to move</span>
+        </div>
+      </div>
+
+      <div id="stage"></div>
+
+      <div class="row" style="justify-content:flex-end;margin-top:8px">
+        <button class="secondary" onclick="window.print()">Print Guide</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Static DSM-5 section always present -->
+  <section class="card" id="dsmCard">
+    <h3>DSM-5 ADHD — Interactive Card</h3>
+    <div class="sub">Select one option for each symptom item (Never/Rarely, Sometimes, Often, Very often). Then set B–F. Use <em>Calculate</em> if needed.</div>
+
+    <div class="row" id="ageRow">
+      <span class="sub">Age group (affects thresholds):</span>
+      <span class="opt sel" data-age="adult">Adult (≥18)</span>
+      <span class="opt" data-age="child">Child/Teen (&lt;18)</span>
+      <button class="ghost" id="resetDSM">Reset DSM</button>
+      <button class="ghost" id="calcDSM">Calculate</button>
+    </div>
+
+    <div class="card" style="background:#0b1220">
+      <h3>A1 — Inattention (9 items)</h3>
+      <div class="sub">Count <strong>Often / Very often</strong>.</div>
+      <div class="grid" id="A1">
+        <!-- 9 A1 items -->
+        <div class="card symptom" data-domain="A1" data-idx="1"><strong>1. Careless mistakes / poor attention to details</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A1" data-idx="2"><strong>2. Difficulty sustaining attention</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A1" data-idx="3"><strong>3. Seems not to listen when spoken to directly</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A1" data-idx="4"><strong>4. Poor follow-through; fails to finish duties</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A1" data-idx="5"><strong>5. Difficulty organizing tasks/activities</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A1" data-idx="6"><strong>6. Avoids/dislikes sustained mental effort</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A1" data-idx="7"><strong>7. Loses things necessary for tasks</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A1" data-idx="8"><strong>8. Easily distracted</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A1" data-idx="9"><strong>9. Forgetful in daily activities</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+      </div>
+    </div>
+
+    <div class="card" style="background:#0b1220">
+      <h3>A2 — Hyperactivity/Impulsivity (9 items)</h3>
+      <div class="sub">Count <strong>Often / Very often</strong>.</div>
+      <div class="grid" id="A2">
+        <!-- 9 A2 items -->
+        <div class="card symptom" data-domain="A2" data-idx="1"><strong>1. Fidgets or squirms</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A2" data-idx="2"><strong>2. Leaves seat when expected to remain seated</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A2" data-idx="3"><strong>3. Runs/climbs inappropriately or inner restlessness</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A2" data-idx="4"><strong>4. Difficulty playing/engaging quietly</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A2" data-idx="5"><strong>5. “On the go” as if driven by a motor</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A2" data-idx="6"><strong>6. Talks excessively</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A2" data-idx="7"><strong>7. Blurts answers before questions complete</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A2" data-idx="8"><strong>8. Trouble waiting turn</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+        <div class="card symptom" data-domain="A2" data-idx="9"><strong>9. Interrupts or intrudes</strong><div class="likert">
+          <span class="opt" data-val="never">Never/Rarely</span><span class="opt" data-val="sometimes">Sometimes</span><span class="opt" data-val="often">Often</span><span class="opt" data-val="very_often">Very often</span></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Criteria B–F (supporting)</h3>
+      <div class="row" id="critB" data-group="B">
+        <span class="sub">B: Several symptoms before age 12?</span>
+        <span class="opt">Yes</span><span class="opt">No</span><span class="opt">Unsure</span>
+      </div>
+      <div class="row" id="critC">
+        <span class="sub">C: Settings with symptoms (select ≥2):</span>
+        <span class="opt" data-setting="home">Home</span>
+        <span class="opt" data-setting="school">School/Work</span>
+        <span class="opt" data-setting="social">Social/Other</span>
+      </div>
+      <div class="row" id="critD" data-group="D">
+        <span class="sub">D: Functional impairment:</span>
+        <span class="opt">None</span><span class="opt">Mild</span><span class="opt">Moderate</span><span class="opt">Severe</span>
+      </div>
+      <div class="row" id="critE" data-group="E">
+        <span class="sub">E: Duration ≥ 6 months?</span>
+        <span class="opt">Yes</span><span class="opt">No</span><span class="opt">Unsure</span>
+      </div>
+      <div class="row" id="critF" data-group="F">
+        <span class="sub">F: Better explained by another disorder/condition?</span>
+        <span class="opt">Yes</span><span class="opt">No</span><span class="opt">Unsure</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>DSM-5 Result</h3>
+      <div class="sub">Decision support — combine with full interview and clinical judgment.</div>
+      <div id="dsmSummary" style="margin-top:8px"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+// --------- Flow (side + stage) ---------
+var FLOW = [
+  {key:'opening',label:'Opening Statements',when:'start'},
+  {key:'ident',label:'Identification',when:'start'},
+  {key:'cc',label:'Chief Complaint',when:'start'},
+  {key:'hpi',label:'History of Presenting Illness',when:'start'},
+  {key:'ros',label:'Psychiatric ROS',when:'later'},
+  {key:'safety',label:'Safety (Today)',when:'later'},
+  {key:'pph',label:'Past Psychiatric History',when:'start'},
+  {key:'pmh',label:'Past Medical History',when:'start'},
+  {key:'meds',label:'Medications & Allergies',when:'start'},
+  {key:'fam',label:'Family History',when:'start'},
+  {key:'soc',label:'Social History',when:'start'},
+  {key:'habits',label:'Habits / Lifestyle',when:'later'}
+];
+
+var GUIDE = {
+opening: [
+  {title:'Warm Welcome & Verification',items:[
+    '“Hello, I’m [Name], a [Psychiatrist] with FasTreat. I’ll be your provider today - thank you for joining this session.”',
+    '“Just before we start, could I confirm your full name and date of birth?”',
+    '“To meet local regulations, could you share where you’re currently located?”'
+  ]},
+  {title:'Structure & Confidentiality',items:[
+    'Inform patient: ~30 mins (complimentary extension based on complexity)',
+    'Reassure confidentiality: ”Just a quick note — this session is being recorded as part of our standard practice to support your care. Everything you share stays private and protected. If you feel unwell anytime, let me know.”'
+  ]}
+],
+
+ident: [
+  {title:'Neutral openers (telehealth friendly)',sub:'Confirm identity, consent, and context before sensitive topics.',items:[
+    '“To start, can I confirm your full name and age?”',
+    '“Are you joining from your home today? Is anyone else present or within earshot?”',
+    '“We’ll focus on attention concerns, but I’ll ask questions across mental and physical health to get the full picture.”',
+    '“What are you doing for work or school these days? And where are you living?”',
+    '“What’s the highest level of education you completed?”'
+  ]}
+],
+
+cc: [
+  {title:'Elicit the patient’s words',items:[
+    '“Tell me what brought you in today.”',
+    '“What are the biggest challenges you’re running into at work/school or at home?”',
+    '“If this visit went really well, what would be better?”'
+  ]}
+],
+
+hpi: [
+  {title:'Chronology & context',items:[
+    'Start: “When did these difficulties begin? How have they changed over time?”',
+    'State: “What was going on around the time things got worse?” (moves/schedule shifts/illness/conflict)',
+    'Stressors (bio-psycho-social): family, finances, health, sleep, grief, role change',
+    'Symptoms (bio-psycho-social): attention, organization, forgetfulness, mood, anxiety, sleep, energy',
+    'Function now: school/work, relationships, ADLs, driving, finances'
+  ]},
+  {title:'Course, prior care & response',items:[
+    '“Have things been getting better, worse, or staying about the same?”',
+    '“Have you ever spoken to another provider about this? Any previous assessments or medications tried?”',
+    '“How did that treatment go — any benefit or side effects you recall?”',
+    '“Have you tried anything on your own that helped or made things worse?” (exercise, sleep schedule, caffeine, cannabis, supplements, apps)'
+  ]},
+  {title:'General health review (recent changes)',items:[
+    '“Any recent changes in your general health — sleep, appetite, bowel habits, or weight?”',
+    'If yes: time-lock to symptom changes (before vs after). Consider medical drivers (thyroid, anemia, meds, pain).'
+  ]},
+  {title:'Screens inside HPI (don’t deep-dive yet)',items:[
+    'Psychosis screen (detail later if positive).',
+    'Suicide history (ever) — today goes in Safety.',
+    'Substances: prescribed & non-medical — timing vs symptom flare (sleep, crash, withdrawal).'
+  ]},
+  {title:'Pitfalls to avoid',tags:['Occam’s Razor'],items:[
+    'One driver (sleep apnea, mood, SUD) can mimic ADHD.',
+    'Time-lock symptoms to childhood vs adult-onset.'
+  ]}
+],
+
+ros: [
+  {title:'Psychiatric ROS (screen each domain separately)',sub:'If positive, grab a one-liner (onset, frequency, duration, impact).',items:[
+    'Depression (low mood, anhedonia, sleep/appetite/energy/concentration)',
+    'Mania/hypomania (elevated/irritable mood, ↓need for sleep, goal-directed activity)',
+    'Psychosis (hallucinations, delusions)',
+    'Trauma/PTSD (intrusions, avoidance, arousal)',
+    'OCD (obsessions, compulsions)',
+    'Eating/weight concerns',
+    'Neurocognitive change (memory/language/visuospatial)',
+    'Anxiety (excessive worry, tension, restlessness)'
+  ]}
+],
+
+safety: [
+  {title:'Normalize, then ask directly (today)',items:[
+    '“Some people might think of suicide when their mood is low, has this ever crossed your mind?”',
+    'If yes, clarify today vs past; then ask: plan, means, intent, access to means, protective factors.',
+    '“If you saw [person they wanted to hurt] on the street, what would you do? Would you defend yourself? Would you want to hurt/kill them?”'
+  ]},
+  {title:'Escalation cues',tags:['Red flags'],items:[
+    'Specific plan and intent, access to lethal means, intoxication/withdrawal, severe agitation, command AH.',
+    'Prior attempt + current stressors + hopelessness.'
+  ]}
+],
+
+pph: [
+  {title:'Past Psychiatric History — concise checklist',items:[
+    'Prior psychiatric diagnoses (if none, “denies”).',
+    'Outpatient care/providers (psychiatrist, therapist, coach).',
+    'Psychiatric hospitalizations (if none, “denies”).',
+    'Suicide attempts/self-harm (if none, “denies”).',
+    'Psychotherapies (CBT, ADHD coaching).',
+    'Somatic treatments (ECT/TMS/ketamine).',
+    'ADHD medication trials (name/dose/duration/response/AEs/adherence).',
+    'Other psychotropics & notable reactions.'
+  ]}
+],
+
+pmh: [
+  {title:'Past Medical History — stimulant-relevant',items:[
+    'Primary care clinician.',
+    'Cardiovascular (HTN, arrhythmia, CAD, structural disease, syncope).',
+    'Endocrine (thyroid, diabetes).',
+    'Neurologic (TBI, seizure).',
+    'Tic/Tourette.',
+    'Sleep (OSA, insomnia, shift work).',
+    'Pregnancy (if applicable).',
+    'Surgeries.'
+  ]}
+],
+
+meds: [
+  {title:'Medications & Allergies',items:[
+    'Current meds (name | dose | route | frequency | indication).',
+    'OTC/herbals/supplements.',
+    'Allergies & reactions (if none: NKDA).'
+  ]}
+],
+
+fam: [
+  {title:'Family History (psychiatric & medical)',items:[
+    'ADHD/learning disorders/tics.',
+    'Mood/anxiety/psychosis.',
+    'Substance use disorders.',
+    'Suicide/self-harm.',
+    'Major medical/genetic.'
+  ]}
+],
+
+soc: [
+  {title:'Social snapshot',items:[
+    'Living situation/household; relationships; children/dependents.',
+    'Education attained/academic performance.',
+    'Work/role/attendance/performance.',
+    'Accommodations/tools (school/work).',
+    'Finances/bills/organization.',
+    'Driving (tickets/accidents).',
+    'Legal issues.',
+    'Trauma/ACEs (brief, non-graphic).'
+  ]}
+],
+
+habits: [
+  {title:'Habits / Lifestyle',items:[
+    'Tobacco/vaping; alcohol; cannabis; other substances.',
+    'Caffeine/energy drinks.',
+    'Exercise; diet; sleep schedule/quality.',
+    'Risk for stimulant misuse/diversion (low/moderate/high) — include brief rationale.'
+  ]}
+]
+};
+
+var stepsEl = document.getElementById('steps');
+var stageEl = document.getElementById('stage');
+var fillEl = document.getElementById('fill');
+var idx = 0;
+
+// Build sidebar
+FLOW.forEach(function(s,i){
+  var d = document.createElement('div');
+  d.className = 'step';
+  d.dataset.idx = i;
+  d.innerHTML = '<div style="width:8px;height:8px;border-radius:999px;background:#334155"></div>' +
+    '<div style="display:flex;flex-direction:column;gap:2px"><strong>'+s.label+'</strong><small>'+(s.when==='start' ? 'Neutral early' : 'Ask later')+'</small></div>' +
+    '<span class="chip '+(s.when==='start'?'start':'later')+'" style="margin-left:auto">'+(s.when==='start'?'START':'LATER')+'</span>';
+  d.addEventListener('click',function(){ idx=i; render(); });
+  stepsEl.appendChild(d);
+});
+
+function sectionCard(secKey){
+  var head = FLOW[idx];
+  var blocks = GUIDE[secKey] || [];
+  var container = document.createElement('div');
+  container.innerHTML = '<div class="card"><h3>'+head.label+'</h3><div class="sub">'+(head.when==='start' ? 'Begin here with neutral topics.' : 'Sensitive content—place after rapport is built.')+'</div></div>';
+  blocks.forEach(function(b,bi){
+    var det = document.createElement('details');
+    // OPEN ALL for 'opening' and 'hpi'; otherwise only first
+    det.open = (secKey==='opening' || secKey==='hpi') ? true : (bi===0);
+    var tags = (b.tags||[]).map(function(t){ return '<span class="tag">'+t+'</span>'; }).join(' ');
+    det.innerHTML = '<summary><strong>'+b.title+'</strong> '+(b.sub?'<span class="sub" style="margin-left:6px">'+b.sub+'</span>':'')+' '+(tags?'<span style="margin-left:auto">'+tags+'</span>':'')+'</summary>' +
+      (b.items ? '<ul>'+b.items.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>' : '');
+    container.appendChild(det);
+  });
+  return container;
+}
+
+function render(){
+  stageEl.innerHTML='';
+  stageEl.appendChild(sectionCard(FLOW[idx].key));
+  var kids = stepsEl.children;
+  for(var i=0;i<kids.length;i++){ kids[i].classList.toggle('active', i===idx); }
+  var pct = Math.round(((idx+1)/FLOW.length)*100);
+  fillEl.style.width = pct+'%';
+  document.getElementById('prevBtn').disabled = idx===0;
+  document.getElementById('nextBtn').disabled = idx===FLOW.length-1;
+}
+
+document.getElementById('prevBtn').addEventListener('click',function(){ if(idx>0){idx--;render();} });
+document.getElementById('nextBtn').addEventListener('click',function(){ if(idx<FLOW.length-1){idx++;render();} });
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft'){ if(idx>0){idx--;render();} }
+  if(e.key==='ArrowRight'){ if(idx<FLOW.length-1){idx++;render();} }
+});
+
+document.getElementById('expandAll').addEventListener('click',function(){
+  var all = stageEl.querySelectorAll('details'); for(var i=0;i<all.length;i++){ all[i].open=true; }
+});
+document.getElementById('collapseAll').addEventListener('click',function(){
+  var all = stageEl.querySelectorAll('details'); for(var i=0;i<all.length;i++){ all[i].open=false; }
+});
+
+document.getElementById('jumpDSM').addEventListener('click',function(){
+  location.hash = '#dsmCard';
+  var target = document.getElementById('dsmCard');
+  if(target){
+    target.classList.remove('flash');
+    setTimeout(function(){ target.scrollIntoView({behavior:'smooth', block:'start'}); target.classList.add('flash'); }, 0);
+  }
+});
+
+// --------- DSM logic for static section ---------
+var dsmCard = document.getElementById('dsmCard');
+var ageRow = document.getElementById('ageRow');
+var resetBtn = document.getElementById('resetDSM');
+var calcBtn = document.getElementById('calcDSM');
+
+function recalcDSM(){
+  var isAdult = ageRow.querySelector('.opt.sel[data-age="adult"]') ? true : false;
+  var req = isAdult ? 5 : 6;
+
+  function countOften(sectionId){
+    var sec = document.getElementById(sectionId);
+    var cells = sec.querySelectorAll('.symptom');
+    var n=0;
+    for(var i=0;i<cells.length;i++){
+      var sel = cells[i].querySelector('.likert .opt.sel');
+      if(!sel) continue;
+      var v = sel.getAttribute('data-val');
+      if(v==='often' || v==='very_often') n++;
+    }
+    return n;
+  }
+  var a1 = countOften('A1');
+  var a2 = countOften('A2');
+  var A1met = a1 >= req;
+  var A2met = a2 >= req;
+  var anyA = A1met || A2met;
+  var pres = A1met && A2met ? 'Combined' : (A1met ? 'Predominantly Inattentive' : (A2met ? 'Predominantly Hyperactive-Impulsive' : '—'));
+
+  function pick(groupId){ var r=document.getElementById(groupId); return r ? r.querySelector('.opt.sel') : null; }
+  var Bsel = pick('critB'); var Bmet = Bsel && Bsel.textContent==='Yes';
+  var Ccount = (document.querySelector('#critC .opt[data-setting="home"].sel')?1:0) + (document.querySelector('#critC .opt[data-setting="school"].sel')?1:0) + (document.querySelector('#critC .opt[data-setting="social"].sel')?1:0);
+  var Cmet = Ccount >= 2;
+  var Dsel = pick('critD'); var Dmet = Dsel ? (Dsel.textContent!=='None') : false;
+  var Esel = pick('critE'); var Emet = Esel && Esel.textContent==='Yes';
+  var Fsel = pick('critF'); var Fmet = Fsel && Fsel.textContent==='No';
+
+  var coreMet = anyA && Bmet && Cmet && Dmet && Emet && Fmet;
+
+  var summary = document.getElementById('dsmSummary');
+  summary.innerHTML = ''+
+    '<div class="grid">'+
+      '<div class="kbdbox"><div>A1 Inattention</div><div><span class="badge '+(A1met?'ok':'no')+'">'+a1+'/'+req+' '+(A1met?'met':'not met')+'</span></div></div>'+
+      '<div class="kbdbox"><div>A2 Hyper/Impulsivity</div><div><span class="badge '+(A2met?'ok':'no')+'">'+a2+'/'+req+' '+(A2met?'met':'not met')+'</span></div></div>'+
+      '<div class="kbdbox"><div>Presentation</div><div><span class="pill">'+pres+'</span></div></div>'+
+      '<div class="kbdbox"><div>B &lt; 12 yrs</div><div><span class="badge '+(Bmet?'ok':'maybe')+'">'+(Bmet?'yes':'—')+'</span></div></div>'+
+      '<div class="kbdbox"><div>C (≥2 settings)</div><div><span class="badge '+(Cmet?'ok':'no')+'">'+Ccount+' settings</span></div></div>'+
+      '<div class="kbdbox"><div>D impairment</div><div><span class="badge '+(Dmet?'ok':'no')+'">'+(Dsel?Dsel.textContent:'—')+'</span></div></div>'+
+      '<div class="kbdbox"><div>E ≥6 months</div><div><span class="badge '+(Emet?'ok':'no')+'">'+(Esel?Esel.textContent:'—')+'</span></div></div>'+
+      '<div class="kbdbox"><div>F rule-out</div><div><span class="badge '+(Fmet?'ok':'no')+'">'+(Fsel?Fsel.textContent:'—')+'</span></div></div>'+
+    '</div>'+
+    '<div style="margin-top:10px;padding:10px;border-radius:10px;border:1px solid #223055;background:#0b1220">'+
+      '<strong>Final:</strong> '+(coreMet
+        ? '<span class="badge ok">ADHD — DSM-5 criteria met</span>'
+        : (anyA ? '<span class="badge maybe">ADHD — symptoms present; supporting criteria incomplete</span>'
+                : '<span class="badge no">ADHD — DSM-5 symptom criteria not met</span>'))+
+    '</div>'+
+    '<div class="muted" style="margin-top:6px">Thresholds: Child/Teen requires ≥6/9 per domain; Adult requires ≥5/9 per domain.</div>';
+}
+
+// Event delegation for DSM
+dsmCard.addEventListener('click',function(e){
+  var t = e.target;
+  if(t.classList.contains('opt')){
+    // Age toggles
+    if(t.parentElement && t.parentElement.id==='ageRow'){
+      var sibs = t.parentElement.querySelectorAll('.opt[data-age]');
+      for(var i=0;i<sibs.length;i++){ sibs[i].classList.remove('sel'); }
+      if(t.getAttribute('data-age')) t.classList.add('sel');
+      recalcDSM(); return;
+    }
+    // Likert rows
+    if(t.parentElement && t.parentElement.classList.contains('likert')){
+      var sibs2 = t.parentElement.querySelectorAll('.opt');
+      for(var j=0;j<sibs2.length;j++){ sibs2[j].classList.remove('sel'); }
+      t.classList.add('sel'); recalcDSM(); return;
+    }
+    // Radio groups B/D/E/F
+    var grp = t.parentElement.getAttribute('data-group');
+    if(grp){
+      var sibs3 = t.parentElement.querySelectorAll('.opt');
+      for(var k=0;k<sibs3.length;k++){ sibs3[k].classList.remove('sel'); }
+      t.classList.add('sel'); recalcDSM(); return;
+    }
+    // Criterion C (multi-select)
+    if(t.parentElement && t.parentElement.id==='critC'){
+      t.classList.toggle('sel'); recalcDSM(); return;
+    }
+  }
+});
+
+resetBtn.addEventListener('click',function(){
+  dsmCard.querySelectorAll('.opt.sel').forEach(function(o){ o.classList.remove('sel'); });
+  ageRow.querySelector('.opt[data-age="adult"]').classList.add('sel');
+  recalcDSM();
+});
+calcBtn.addEventListener('click',recalcDSM);
+
+// First render
+render();
+recalcDSM();
+</script>
+</body>
+</html>
